@@ -9,5 +9,6 @@
 #define DEV_HPP_
 
 #include <dev/base/Base.hpp>
+#include <dev/net/Net.hpp>
 
 #endif /* DEV_HPP_ */

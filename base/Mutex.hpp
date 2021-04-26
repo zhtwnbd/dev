@@ -10,6 +10,7 @@
 
 #include <boost/noncopyable.hpp>
 #if defined(__WINDOWS__)
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #elif defined(__LINUX__)
 #error
