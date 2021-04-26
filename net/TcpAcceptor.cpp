@@ -91,7 +91,7 @@ void TcpAcceptor::handleOutput(Socket* /*sock*/)
 {
 }
 
-void TcpAcceptor::handleError(Socket* /*sock*/)
+void TcpAcceptor::handleException(Socket* /*sock*/)
 {
 }
 

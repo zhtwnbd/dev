@@ -9,6 +9,7 @@
 #define NET_TCPCONNECTIONFACTORY_HPP_
 
 #include <boost/noncopyable.hpp>
+#include <boost/shared_ptr.hpp>
 #include <dev/net/TcpConnection.hpp>
 
 namespace dev
@@ -24,6 +25,8 @@ namespace dev
         public:
             virtual TcpConnectionPtr createConnection(sock_t sock, size_t isBufSize, size_t osBufSize) = 0;
         };
+
+        typedef boost::shared_ptr<TcpConnectionFactory> TcpConnectionFactoryPtr;
     }
 }
 

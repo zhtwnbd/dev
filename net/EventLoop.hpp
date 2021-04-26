@@ -20,8 +20,17 @@ namespace dev
 {
     namespace net
     {
+        class TcpWorker;
+        class TcpServer;
+
         class EventLoop : public boost::noncopyable
         {
+        private:
+            friend class TcpWorker;
+            friend class TcpServer;
+        public:
+            typedef boost::function<void(Socket*)> PassSocketPointerCB;
+
         public:
             enum Status
             {
@@ -53,6 +62,7 @@ namespace dev
 
         private:
             void setStatus(Status status) { status_ = status; }
+            void setRemoveSocketCallback(PassSocketPointerCB callback) { removeSocketCB_ = callback; }
 
         private:
             void doAddSocket(Socket* sock, Reactor::EventType events, SocketEventHandler* handler);
@@ -63,6 +73,9 @@ namespace dev
             Status status_;                 // 状态
             base::mtime_t frameTime_;       // 帧时间(毫秒)，默认每秒50帧
             ReactorPtr reactor_;            // 网络消息派发器
+
+        private:
+            PassSocketPointerCB removeSocketCB_;
 
         private:
 

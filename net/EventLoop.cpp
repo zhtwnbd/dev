@@ -109,4 +109,6 @@ void EventLoop::doAddSocket(Socket* sock, Reactor::EventType events, SocketEvent
 void EventLoop::doRemoveSocket(Socket* sock)
 {
     reactor_->removeSocket(sock);
+    if (removeSocketCB_)
+        removeSocketCB_(sock);
 }

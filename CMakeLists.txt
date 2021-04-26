@@ -48,6 +48,10 @@ set(dev_SOURCES
 	net/TcpConnectionFactory.hpp
 	net/TcpAcceptor.hpp
 	net/TcpAcceptor.cpp
+	net/TcpWorker.hpp
+	net/TcpWorker.cpp
+	net/TcpServer.hpp
+	net/TcpServer.cpp
 )
 
 if (WINDOWS)

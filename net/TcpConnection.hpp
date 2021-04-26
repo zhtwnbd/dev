@@ -19,6 +19,8 @@ namespace dev
     namespace net
     {
         class TcpAcceptor;
+        class TcpWorker;
+        class TcpServer;
 
         class TcpConnection;
         typedef boost::shared_ptr<TcpConnection> TcpConnectionPtr;
@@ -27,6 +29,8 @@ namespace dev
         {
         private:
             friend class TcpAcceptor;
+            friend class TcpWorker;
+            friend class TcpServer;
 
         public:
             typedef boost::function<void(TcpConnection&)> PassTcpConnectionRefCB;

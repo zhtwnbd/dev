@@ -17,5 +17,7 @@
 #include <dev/net/TcpConnectionInputStream.hpp>
 #include <dev/net/TcpConnectionOutputStream.hpp>
 #include <dev/net/TcpConnection.hpp>
+#include <dev/net/TcpConnectionFactory.hpp>
+#include <dev/net/TcpServer.hpp>
 
 #endif /* NET_NET_HPP_ */

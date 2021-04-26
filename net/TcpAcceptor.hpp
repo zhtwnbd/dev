@@ -17,8 +17,13 @@ namespace dev
 {
     namespace net
     {
+        class TcpServer;
+
         class TcpAcceptor : public SocketEventHandler
         {
+        private:
+            friend class TcpServer;
+
         public:
             typedef boost::function<TcpConnectionPtr&(void)> RtnTcpConnectionPtrRefCB;
             typedef boost::function<void(TcpConnectionPtr&)> PassTcpConnectionPtrRefCB;
@@ -42,7 +47,7 @@ namespace dev
         public:
             virtual void handleInput(Socket* sock = NULL);
             virtual void handleOutput(Socket* sock = NULL);
-            virtual void handleError(Socket* sock = NULL);
+            virtual void handleException(Socket* sock = NULL);
             virtual void handleClose(Socket* sock = NULL);
             virtual void handleHeartBeat(Socket* sock = NULL);
 
