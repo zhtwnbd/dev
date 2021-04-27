@@ -8,6 +8,11 @@ add_definitions(-D__WINDOWS__)
 add_definitions(-D_WIN32_WINNT=0x0501)
 else ()
 add_definitions(-D__LINUX__)
+	if (CMAKE_COMPILER_IS_GNUCXX)
+	add_definitions(-std=gnu++0x)
+	else ()
+	add_definitions(-std=stdc++11)
+	endif()
 endif()
 add_definitions(-D_USE_SELECT)
 
@@ -58,6 +63,10 @@ if (WINDOWS)
 include_directories( 
 	"E:/SDKs/boost_1_58_0.msw"
 	"E:/git"
+)
+else ()
+include_directories(
+	"~/git"
 )
 endif()
 

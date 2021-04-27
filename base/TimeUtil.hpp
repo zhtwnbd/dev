@@ -13,7 +13,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #elif defined(__LINUX__)
-#error
+#include <time.h>
 #endif
 
 namespace dev
@@ -23,6 +23,7 @@ namespace dev
 #if defined(__WINDOWS__)
         typedef DWORD   mtime_t;
 #elif defined(__LINUX__)
+		typedef long	mtime_t;
 #endif
 
         class TimeUtil : public boost::noncopyable

@@ -13,7 +13,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #elif defined(__LINUX__)
-#error
+#include <pthread.h>
 #endif
 
 namespace dev
@@ -51,7 +51,33 @@ namespace dev
         };
 
 #elif defined(__LINUX__)
-#error
+        class Mutex : public boost::noncopyable
+        {
+        public:
+            Mutex()
+            {
+				mutex_ = PTHREAD_MUTEX_INITIALIZER;
+            }
+
+            ~Mutex()
+            {
+				::pthread_mutex_destroy(&mutex_);
+            }
+
+        public:
+            void lock()
+            {
+				::pthread_mutex_lock(&mutex_);
+            }
+
+            void unlock()
+            {
+				::pthread_mutex_unlock(&mutex_);
+            }
+
+        private:
+            ::pthread_mutex_t mutex_;
+        };
 #endif
     }
 }

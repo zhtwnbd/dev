@@ -14,7 +14,15 @@
 #include <WinSock2.h>
 #include <ws2tcpip.h>
 #elif defined(__LINUX__)
-#error
+#include <sys/socket.h>
+#include <sys/sendfile.h>
+#include <sys/epoll.h>
+#include <sys/time.h>
+#include <sys/select.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <fcntl.h>
 #endif
 
 #if defined(__WINDOWS__)
@@ -35,7 +43,9 @@ namespace dev
         typedef SOCKET  sock_t;
         typedef int socklen_t;
 #elif defined(__LINUX__)
-#error
+		typedef int		sock_t;
+		static const int SOCKET_ERROR = -1;
+		static const sock_t INVALID_SOCKET = -1;
 #endif
 
         class SocketApi
@@ -467,7 +477,11 @@ namespace dev
              */
             static int ioctlsocket(sock_t sock, long cmd, u_long* argp)
             {
+#if defined(__WINDOWS__)
                 return ::ioctlsocket(sock, cmd, argp);
+#elif defined(__LINUX__)
+				return -1;
+#endif
             }
 
             /**
@@ -478,8 +492,15 @@ namespace dev
              */
             static bool setsocketnoblocking(sock_t sock, bool on)
             {
+#if defined(__WINDOWS__)
                 u_long arg = (on) ? 1 : 0;
                 return (0 == ::ioctlsocket(sock, FIONBIO, &arg));
+#elif defined(__LINUX__)
+				int flags = fcntl(sock, F_GETFL, 0);
+				if (on) flags |= O_NONBLOCK;
+				else flags &= ~O_NONBLOCK;
+				return (-1 != fcntl(sock, F_SETFL, flags));
+#endif
             }
         };
     }

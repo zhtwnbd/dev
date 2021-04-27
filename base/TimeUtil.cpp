@@ -13,6 +13,8 @@ mtime_t TimeUtil::fromStartup()
 #if defined(__WINDOWS__)
     return ::GetTickCount();
 #elif defined(__LINUX__)
-#error
+	struct timespec time;
+	clock_gettime(CLOCK_MONOTONIC, &time);
+	return mtime_t(time.tv_nsec / 1000000);
 #endif
 }

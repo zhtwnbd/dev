@@ -8,6 +8,10 @@
 #include "TcpConnectionInputStream.hpp"
 using namespace dev::net;
 
+#if defined(__LINUX__)
+#define min std::min
+#endif
+
 TcpConnectionInputStream::TcpConnectionInputStream(Socket& sock, size_t size)
 : TcpConnectionStream(sock, size)
 {

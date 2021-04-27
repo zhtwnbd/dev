@@ -9,6 +9,10 @@
 #include "TcpConnectionStream.hpp"
 using namespace dev::net;
 
+#if defined(__LINUX__)
+#define min	std::min
+#endif
+
 TcpConnectionStream::TcpConnectionStream(Socket& sock, size_t size)
 : sock_(sock)
 , buffSize_(size)

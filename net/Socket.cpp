@@ -5,6 +5,8 @@
  * Description  :
  *****************************************************************************/
 
+#include <memory.h>
+#include <errno.h>
 #include "Socket.hpp"
 using namespace dev::net;
 
@@ -45,7 +47,10 @@ int Socket::receive(char* buff, size_t length, int flags /*= 0*/)
     if (ret == SOCKET_ERROR)
     {
 #if defined(__LINUX__)
-#error
+		if (errno == EWOULDBLOCK)
+		{
+			return SOCKET_ERROR_WOULDBLOCK;
+		}
 #elif defined(__WINDOWS__)
         int wsaError = WSAGetLastError();
         if (wsaError == WSAEWOULDBLOCK)
@@ -68,7 +73,10 @@ int Socket::send(const char* buff, size_t length, int flags /* = 0 */)
     if (ret == SOCKET_ERROR)
     {
 #if defined(__LINUX__)
-#error
+		if (errno == EWOULDBLOCK)
+        {
+            return SOCKET_ERROR_WOULDBLOCK;
+        }
 #elif defined(__WINDOWS__)
         int wsaError = WSAGetLastError();
         if (wsaError == WSAEWOULDBLOCK)

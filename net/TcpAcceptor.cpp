@@ -37,7 +37,11 @@ bool TcpAcceptor::open(const char* addr, int port, int backlog)
     sockaddr_in saddr;
     memset(&saddr, 0, sizeof(saddr));
     saddr.sin_family = AF_INET;
+#if defined(__WINDOWS__)
     saddr.sin_addr.S_un.S_addr = ::inet_addr(addr);
+#elif defined(__LINUX__)
+	saddr.sin_addr.s_addr = ::inet_addr(addr);
+#endif
     saddr.sin_port = ::htons(port);
 
     if (!SocketApi::bind(rawSock, (struct sockaddr*) &saddr, sizeof(saddr)))

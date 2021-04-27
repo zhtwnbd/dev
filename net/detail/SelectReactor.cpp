@@ -5,6 +5,7 @@
  * Description  :
  *****************************************************************************/
 
+#include <memory.h>
 #include "SelectReactor.hpp"
 using namespace dev::net;
 using namespace dev::net::detail;

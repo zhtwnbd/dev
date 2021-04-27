@@ -10,7 +10,8 @@
 #if defined(__WINDOWS__)
 #include <windows.h>
 #elif defined(__LINUX__)
-#error
+#include <unistd.h>
+#include <exception>
 #endif
 
 #include "Runtime.hpp"
@@ -38,7 +39,25 @@ unsigned __stdcall ThreadProc(void* argp)
     return 0;
 }
 #elif defined(__LINUX__)
-#error
+void* ThreadProc(void* argp)
+{
+    __DV_TRY
+    {
+        Thread* thread = static_cast<Thread*>(argp);
+        if (thread == NULL)
+            throw std::exception();
+
+        thread->setStatus(Thread::RUNNING);
+        thread->run();
+        thread->exit(NULL);
+        thread->setStatus(Thread::EXIT);
+    }
+    __DV_CATCH(std::exception& e)
+    {
+        __DV_DUMP(e);
+    }
+    return NULL;
+}
 #endif
 
 Thread::Thread()
@@ -67,7 +86,12 @@ void Thread::start()
     }
     thandle_ = retVal;
 #elif defined(__LINUX__)
-#error
+	status_ = READY;
+	if (::pthread_create(&tid_, NULL, ThreadProc, this) != 0)
+	{
+		status_ = NOTREADY;
+        throw std::exception();
+	}
 #endif
 }
 
@@ -84,7 +108,7 @@ void Thread::join()
     ::WaitForSingleObject((HANDLE)thandle_, INFINITE);
     ::CloseHandle((HANDLE)thandle_);
 #elif defined(__LINUX__)
-#error
+	::pthread_join(tid_, NULL);
 #endif
 }
 
@@ -93,16 +117,16 @@ Thread::id Thread::currentTid()
 #if defined(__WINDOWS__)
     return ::GetCurrentThreadId();
 #elif defined(__LINUX__)
-#error
+	return ::pthread_self();
 #endif
 }
 
 void Thread::sleep(int ms)
 {
 #if defined(__WINDOWS__)
-    Sleep(ms);
+    ::Sleep(ms);
 #elif defined(__LINUX__)
-#error
+	::usleep(ms * 1000);
 #endif
 }
 

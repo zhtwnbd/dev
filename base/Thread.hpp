@@ -12,7 +12,7 @@
 #if defined(__WINDOWS__)
 #include <process.h>
 #elif defined(__LINUX__)
-#error
+#include <pthread.h>
 #endif
 
 namespace dev
@@ -28,7 +28,7 @@ namespace dev
 #if defined(__WINDOWS__)
 			typedef unsigned	id;
 #elif defined(__LINUX__)
-#error
+			typedef pthread_t	id;
 #endif
 
 			enum Status
@@ -93,7 +93,6 @@ namespace dev
 #if defined(__WINDOWS__)
 			::uintptr_t thandle_;
 #elif defined(__LINUX__)
-#error
 #endif
 			Status status_;
 		};
