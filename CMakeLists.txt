@@ -16,6 +16,10 @@ add_definitions(-D__LINUX__)
 endif()
 add_definitions(-D_USE_SELECT)
 
+if (DEBUG)
+add_definitions(-D_DEBUG)
+endif()
+
 set(dev_SOURCES
 	Dev.hpp
 	base/Base.hpp

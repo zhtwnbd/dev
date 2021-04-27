@@ -61,6 +61,7 @@ void TcpAcceptor::close()
 
 void TcpAcceptor::handleInput(Socket* /*sock*/)
 {
+    __DV_ENTER
     assert(status_ == RUNNING);
     assert(newConnectionCB_);
     assert(connectionEstablishedCB_);
@@ -71,6 +72,7 @@ void TcpAcceptor::handleInput(Socket* /*sock*/)
         if (!SocketApi::setsocketnoblocking(newSock, true))
         {
             SocketApi::close(newSock);
+            __DV_LEAVE
             return;
         }
 
@@ -89,6 +91,7 @@ void TcpAcceptor::handleInput(Socket* /*sock*/)
             SocketApi::close(newSock);
         }
     }
+    __DV_LEAVE
 }
 
 void TcpAcceptor::handleOutput(Socket* /*sock*/)

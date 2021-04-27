@@ -10,6 +10,15 @@
 
 #include <stdio.h>
 
+// 调试相关
+#if defined(_DEBUG)
+#define __DV_ENTER  printf("enter %s,%s\n", __FILE__, __FUNCTION__);
+#define __DV_LEAVE  printf("leave %s,%s\n", __FILE__, __FUNCTION__);
+#else
+#define __DV_ENTER
+#define __DV_LEAVE
+#endif
+
 // 异常处理
 #define __DV_TRY		try
 #define __DV_CATCH		catch
