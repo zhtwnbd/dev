@@ -33,6 +33,11 @@ namespace dev
                 virtual void clean(void);
                 virtual void tick(int timeout = 0);
 
+#if defined(__LINUX__)
+            private:
+                void doCalcMaxSock(void);
+#endif
+
             private:
                 enum Fdsets
                 {
@@ -42,6 +47,10 @@ namespace dev
                 };
 
                 volatile base::mtime_t lastTickTime_;	// 上次tick函数执行完毕的时间
+
+#if defined(__LINUX__)
+                sock_t maxSock_;                        // 数值最大的套接字
+#endif
 
                 fd_set readfds_[SUM];
                 fd_set writefds_[SUM];

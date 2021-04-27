@@ -13,6 +13,9 @@ using namespace dev::net::detail;
 
 SelectReactor::SelectReactor()
 : lastTickTime_(0)
+#if defined(__LINUX__)
+, maxSock_(0)
+#endif
 {
     memset(&readfds_, 0, sizeof(readfds_));
     memset(&writefds_, 0, sizeof(writefds_));
@@ -26,6 +29,9 @@ SelectReactor::~SelectReactor()
 
 bool SelectReactor::addSocket(Socket* sock, EventType events, SocketEventHandler* handler)
 {
+    if (!(events & ALL))
+        return false;
+
     sock_t rawSock = sock->getSocket();
 
     if (events & READ)
@@ -40,12 +46,12 @@ bool SelectReactor::addSocket(Socket* sock, EventType events, SocketEventHandler
     {
         FD_SET(rawSock, &exceptfds_[BAK]);
     }
-    if (events & ALL)
-    {
-        handlerMap_[sock] = handler;
-        return true;
-    }
-    return false;
+#if defined(__LINUX__)
+    if (rawSock > maxSock_)
+        maxSock_ = rawSock;
+#endif
+    handlerMap_[sock] = handler;
+    return true;
 }
 
 bool SelectReactor::removeSocket(Socket* sock)
@@ -67,6 +73,11 @@ bool SelectReactor::removeSocket(Socket* sock)
     {
         handler->handleClose(sock);
     }
+
+#if defined(__LINUX__)
+    doCalcMaxSock();
+#endif
+
     return true;
 }
 
@@ -100,7 +111,11 @@ void SelectReactor::tick(int timeout)
     { 0 };
     tm.tv_usec = timeout * 1000;
 
-    int isel = SocketApi::select(0, &readfds_[USE], &writefds_[USE],
+    int nfds = 0;
+#if defined(__LINUX__)
+
+#endif
+    int isel = SocketApi::select(nfds, &readfds_[USE], &writefds_[USE],
         &exceptfds_[USE], &tm);
     if (isel > 0)
     {
@@ -131,3 +146,40 @@ void SelectReactor::tick(int timeout)
         }
     }
 }
+
+#if defined(__LINUX__)
+void SelectReactor::doCalcMaxSock()
+{
+    maxSock_ = 0;
+
+    u_int nfds = exceptfds_[BAK].fd_count;
+    sock_t* fds = exceptfds_[BAK].fd_array;
+    for (u_int x = 0; x < nfds; ++x)
+    {
+        if (fds[x] > maxSock_)
+        {
+            maxSock_ = fds[x];
+        }
+    }
+
+    nfds = readfds_[BAK].fd_count;
+    fds = readfds_[BAK].fd_array;
+    for (u_int x = 0; x < nfds; ++x)
+    {
+        if (fds[x] > maxSock_)
+        {
+            maxSock_ = fds[x];
+        }
+    }
+
+    nfds = writefds_[BAK].fd_count;
+    fds = writefds_[BAK].fd_array;
+    for (u_int x = 0; x < nfds; ++x)
+    {
+        if (fds[x] > maxSock_)
+        {
+            maxSock_ = fds[x];
+        }
+    }
+}
+#endif
