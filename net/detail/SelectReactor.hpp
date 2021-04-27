@@ -8,6 +8,9 @@
 #ifndef NET_DETAIL_SELECTREACTOR_HPP_
 #define NET_DETAIL_SELECTREACTOR_HPP_
 
+#if defined(__LINUX__)
+#include <vector>
+#endif
 #include <map>
 #include <dev/base/TimeUtil.hpp>
 #include <dev/net/Socket.hpp>
@@ -35,7 +38,7 @@ namespace dev
 
 #if defined(__LINUX__)
             private:
-                void doCalcMaxSock(void);
+                void doCalcMaxSock(sock_t sock);
 #endif
 
             private:
@@ -50,6 +53,8 @@ namespace dev
 
 #if defined(__LINUX__)
                 sock_t maxSock_;                        // 数值最大的套接字
+                typedef std::vector<sock_t> SOCKET_VEC;
+                SOCKET_VEC socks_;                      // 所有套接字数组
 #endif
 
                 fd_set readfds_[SUM];

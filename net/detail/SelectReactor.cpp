@@ -49,6 +49,7 @@ bool SelectReactor::addSocket(Socket* sock, EventType events, SocketEventHandler
 #if defined(__LINUX__)
     if (rawSock > maxSock_)
         maxSock_ = rawSock;
+    socks_.push_back(rawSock);
 #endif
     handlerMap_[sock] = handler;
     return true;
@@ -75,7 +76,7 @@ bool SelectReactor::removeSocket(Socket* sock)
     }
 
 #if defined(__LINUX__)
-    doCalcMaxSock();
+    doCalcMaxSock(rawSock);
 #endif
 
     return true;
@@ -113,7 +114,7 @@ void SelectReactor::tick(int timeout)
 
     int nfds = 0;
 #if defined(__LINUX__)
-
+    nfds = maxSock_ + 1;
 #endif
     int isel = SocketApi::select(nfds, &readfds_[USE], &writefds_[USE],
         &exceptfds_[USE], &tm);
@@ -148,37 +149,30 @@ void SelectReactor::tick(int timeout)
 }
 
 #if defined(__LINUX__)
-void SelectReactor::doCalcMaxSock()
+void SelectReactor::doCalcMaxSock(sock_t sock)
 {
+    SOCKET_VEC::iterator it = socks_.begin();
+    SOCKET_VEC::iterator end = socks_.end();
+    for (; it != end; ++it)
+    {
+        if (*it == sock)
+            break;
+    }
+
+    if (it != end)
+        socks_.erase(it);
+
+    if (sock != maxSock_)
+        return;
+
     maxSock_ = 0;
-
-    u_int nfds = exceptfds_[BAK].fd_count;
-    sock_t* fds = exceptfds_[BAK].fd_array;
-    for (u_int x = 0; x < nfds; ++x)
+    it = socks_.begin();
+    for (; it != end; ++it)
     {
-        if (fds[x] > maxSock_)
+        if (*it > maxSock_)
         {
-            maxSock_ = fds[x];
-        }
-    }
-
-    nfds = readfds_[BAK].fd_count;
-    fds = readfds_[BAK].fd_array;
-    for (u_int x = 0; x < nfds; ++x)
-    {
-        if (fds[x] > maxSock_)
-        {
-            maxSock_ = fds[x];
-        }
-    }
-
-    nfds = writefds_[BAK].fd_count;
-    fds = writefds_[BAK].fd_array;
-    for (u_int x = 0; x < nfds; ++x)
-    {
-        if (fds[x] > maxSock_)
-        {
-            maxSock_ = fds[x];
+            maxSock_ = *it;
+            break;
         }
     }
 }
