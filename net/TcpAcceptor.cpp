@@ -10,9 +10,9 @@
 using namespace dev::net;
 
 TcpAcceptor::TcpAcceptor()
-: sock_(SocketApi::socket(AF_INET, SOCK_STREAM))
+: status_(READY)
 , eventLoop_(NULL)
-, status_(READY)
+, sock_(SocketApi::socket(AF_INET, SOCK_STREAM))
 {
 
 }

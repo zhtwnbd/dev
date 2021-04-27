@@ -10,8 +10,8 @@
 using namespace dev::net;
 
 TcpWorker::TcpWorker()
-: eventLoop()
-, connInWorker_(0)
+: connInWorker_(0)
+, eventLoop()
 {
     eventLoop.setRemoveSocketCallback(
         boost::bind(&TcpWorker::onSocketRemovedFromLoop, this, _1));
