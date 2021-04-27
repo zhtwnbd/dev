@@ -5,6 +5,7 @@
  * Description	:
  *****************************************************************************/
 
+#include <dev/net/TcpServer.hpp>
 #include "TcpConnection.hpp"
 using namespace dev::net;
 
@@ -75,12 +76,13 @@ void TcpConnection::unbind()
 void TcpConnection::doError()
 {
     if (onErrorCB_) onErrorCB_(*this);
+    TcpServer::closeConnection(*this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //// 回调函数
 
-void TcpConnection::handleError(Socket* sock /* = NULL */)
+void TcpConnection::handleException(Socket* sock /* = NULL */)
 {
     if (status_ == TcpConnection::CONNECT)
         doError();

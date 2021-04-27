@@ -68,7 +68,7 @@ namespace dev
         public:
             virtual void handleInput(Socket* sock = NULL);
             virtual void handleOutput(Socket* sock = NULL);
-            virtual void handleError(Socket* sock = NULL);
+            virtual void handleException(Socket* sock = NULL);
             virtual void handleClose(Socket* sock = NULL);
             virtual void handleHeartBeat(Socket* sock = NULL);
 

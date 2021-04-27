@@ -37,6 +37,11 @@ EventLoop::EventLoop(Reactor* reactor)
 
 }
 
+EventLoop::~EventLoop()
+{
+
+}
+
 int EventLoop::run()
 {
     if (status_ != READY)
