@@ -12,6 +12,9 @@
 #include <dev/net/Socket.hpp>
 #include <dev/net/Reactor.hpp>
 #include <dev/net/detail/SelectReactor.hpp>
+#if defined(__LINUX__)
+#include <dev/net/detail/EPollReactor.hpp>
+#endif
 #include <dev/net/EventLoop.hpp>
 #include <dev/net/TcpConnectionStream.hpp>
 #include <dev/net/TcpConnectionInputStream.hpp>

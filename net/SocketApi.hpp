@@ -208,6 +208,16 @@ namespace dev
             }
 
             /**
+             * @brief
+             * @param size    套接字句柄
+             * @return 失败返回-1
+             */
+            static int epoll_create(int size)
+            {
+            	return ::epoll_create(size);
+            }
+
+            /**
              * @brief 修改epfd代表的epoll实例的兴趣列表
              * @param epfd  epoll句柄
              * @param op    操作类型(EPOLL_CTL_ADD|...)

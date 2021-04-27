@@ -6,15 +6,16 @@ project(dev)
 if (WINDOWS)
 add_definitions(-D__WINDOWS__)
 add_definitions(-D_WIN32_WINNT=0x0501)
+add_definitions(-D_USE_SELECT)
 else ()
 add_definitions(-D__LINUX__)
+add_definitions(-D_USE_EPOLL)
 	if (CMAKE_COMPILER_IS_GNUCXX)
 	add_definitions(-std=gnu++0x)
 	else ()
 	add_definitions(-std=stdc++11)
 	endif()
 endif()
-add_definitions(-D_USE_SELECT)
 
 if (DEBUG)
 add_definitions(-D_DEBUG)
@@ -64,6 +65,16 @@ set(dev_SOURCES
 )
 
 if (WINDOWS)
+set(plat_SRC
+)
+else()
+set(plat_SRC
+	net/detail/EPollReactor.hpp
+	net/detail/EPollReactor.cpp
+)
+endif()
+
+if (WINDOWS)
 include_directories( 
 	"E:/SDKs/boost_1_58_0.msw"
 	"E:/git"
@@ -74,4 +85,4 @@ include_directories(
 )
 endif()
 
-add_library(dev STATIC ${dev_SOURCES})
+add_library(dev STATIC ${dev_SOURCES} ${plat_SRC})

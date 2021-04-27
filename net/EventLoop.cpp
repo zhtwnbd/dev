@@ -9,6 +9,8 @@
 #include <dev/base/Thread.hpp>
 #if defined(_USE_SELECT)
 #include <dev/net/detail/SelectReactor.hpp>
+#elif defined(_USE_EPOLL)
+#include <dev/net/detail/EPollReactor.hpp>
 #endif
 
 #include "EventLoop.hpp"
@@ -23,6 +25,8 @@ EventLoop::EventLoop()
 , frameTime_(20)
 #if defined(_USE_SELECT)
 , reactor_(new detail::SelectReactor())
+#elif defined(_USE_EPOLL)
+, reactor_(new detail::EPollReactor())
 #endif
 {
 
