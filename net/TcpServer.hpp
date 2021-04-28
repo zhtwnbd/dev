@@ -66,6 +66,8 @@ namespace dev
             Status getStatus(void) const { return status_; }
             EventLoop& getLoop() { return eventLoop_; }
 
+            base::LoggerPtr& getLogger(){ return logger_; }
+
         public:
             void setConnectionEstablishedCallback(PassTcpConnectionPtrRefCB callback) { connectEstabedCallback_ = callback; }
             void setMessageCallback(InputTcpMessageCB callback) { messageCallback_ = callback; }
