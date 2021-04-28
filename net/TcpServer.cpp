@@ -168,6 +168,8 @@ void TcpServer::_shutdownWorkers()
     {
         setStatus(TcpServer::EXIT);
         logger_->log("Server is shutdown");
+        if (serverShutdownCallback_)
+            serverShutdownCallback_();
         return;
     }
 
@@ -341,4 +343,7 @@ void TcpServer::doShutdownWorker(TcpWorker* worker /* = NULL */)
     setStatus(TcpServer::EXIT);
 
     logger_->log("Server is shutdown");
+
+    if (serverShutdownCallback_)
+        serverShutdownCallback_();
 }

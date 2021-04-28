@@ -77,6 +77,9 @@ namespace dev
             void setConnectionHeartBeatCallback(PassTcpConnectionRefCB callback) { heartBeatCallback_ = callback; }
             void setConnectionWritableCallback(PassTcpConnectionRefCB callback) { canWriteCallback_ = callback; }
 
+        public:
+            void setServerShutdownCallback(boost::function<void(void)> callback) { serverShutdownCallback_ = callback; }
+
         private:
             void setStatus(Status status) { status_ = status; }
         private:
@@ -123,7 +126,8 @@ namespace dev
             PassTcpConnectionRefCB closingCallback_;	        // 连接关闭回调
             PassTcpConnectionRefCB heartBeatCallback_;	        // 连接心跳回调
             PassTcpConnectionRefCB canWriteCallback_;	        // 连接输出流可写回调(输出流空)
-
+        private:
+            boost::function<void(void)> serverShutdownCallback_;    // 服务器关闭回调
 
 
         private:
