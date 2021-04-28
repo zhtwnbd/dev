@@ -31,6 +31,8 @@ namespace dev
             sock_t getSocket() const { return sock_; }
             bool isValid(void) const { return sock_ != INVALID_SOCKET; }
             bool setNonBlocking(bool on = true);
+            bool setReuseAddr(bool on = false);
+            bool setLinger(bool on = false);
 
         public:
 

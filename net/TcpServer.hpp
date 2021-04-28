@@ -11,6 +11,7 @@
 #include <map>
 #include <vector>
 #include <boost/noncopyable.hpp>
+#include <dev/base/Logger.hpp>
 #include <dev/net/Socket.hpp>
 #include <dev/net/EventLoop.hpp>
 #include <dev/net/TcpConnectionInputStream.hpp>
@@ -39,6 +40,7 @@ namespace dev
                 MASTERASWORKER,	// 主线程作为工作线程使用(处理连接)
                 CONNHEARTBEATTIME,	// 连接心跳间隔
                 FRAMETIME,		// 帧时间
+                LOGGER          // 日志记录器
             };
 
             enum Status
@@ -55,6 +57,7 @@ namespace dev
         public:
             bool open(const char* addr, int port, int backlog);
             void config(Options optname, size_t val);
+            void config(Options optname, base::LoggerPtr logger);
             void close(void);
 
             static void closeConnection(TcpConnectionPtr& conn);
@@ -94,7 +97,8 @@ namespace dev
 
         private:
             volatile int connIdGen_;            // 连接ID生成
-            Status status_;               // 服务器状态
+            Status status_;                     // 服务器状态
+            base::LoggerPtr logger_;            // 日志记录器
 
 
             dev::net::TcpAcceptor acceptor_;    // 连接接收器

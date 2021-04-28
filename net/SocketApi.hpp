@@ -33,8 +33,6 @@ typedef signed int ssize_t;
 #endif
 
 
-#define SOCKET_ERROR_WOULDBLOCK -500
-
 namespace dev
 {
     namespace net
@@ -47,6 +45,8 @@ namespace dev
 		static const int SOCKET_ERROR = -1;
 		static const sock_t INVALID_SOCKET = -1;
 #endif
+
+        static const int SOCKET_ERROR_WOULDBLOCK = -500;
 
         class SocketApi
         {
@@ -208,8 +208,8 @@ namespace dev
             }
 
             /**
-             * @brief
-             * @param size    套接字句柄
+             * @brief 创建epoll描述符
+             * @param size    初始化大小()
              * @return 失败返回-1
              */
             static int epoll_create(int size)
@@ -497,7 +497,7 @@ namespace dev
             /**
              * @brief 设置套接字IO模型
              * @param sock	套接字句柄
-             * @param on		是否设置为非阻塞
+             * @param on	是否设置为非阻塞
              * @return 成功返回true
              */
             static bool setsocketnoblocking(sock_t sock, bool on)
@@ -511,6 +511,20 @@ namespace dev
 				else flags &= ~O_NONBLOCK;
 				return (-1 != fcntl(sock, F_SETFL, flags));
 #endif
+            }
+
+            /**
+             * @brief 设置套接字Linger选项
+             * @param sock	套接字句柄
+             * @param on	是否设置为非阻塞
+             * @return 成功返回true
+             */
+            static bool setsocketlinger(sock_t sock, bool on)
+            {
+                struct linger ling;
+                ling.l_onoff = on ? 1 : 0;
+                ling.l_linger = 0;
+                return SocketApi::setsockopt(sock, SOL_SOCKET, SO_LINGER, &ling, sizeof(ling));
             }
         };
     }

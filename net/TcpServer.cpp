@@ -18,6 +18,7 @@ for (size_t x = 0; x < size; ++x)   \
 TcpServer::TcpServer(EventLoop& eventLoop)
 : connIdGen_(0)
 , status_(READY)
+, logger_(NULL)
 , eventLoop_(eventLoop)
 , isSizeCfg_(0x1000)
 , osSizeCfg_(0x1000)
@@ -40,6 +41,9 @@ TcpServer::~TcpServer()
 bool TcpServer::open(const char* addr, int port, int backlog)
 {
     assert(status_ == TcpServer::READY);
+    assert(logger_);
+
+    logger_->log("Server starting...");
 
     // 启动监听器
     if (!acceptor_.open(addr, port, backlog))
@@ -66,6 +70,8 @@ bool TcpServer::open(const char* addr, int port, int backlog)
         eventLoop_.setFrameTime(loopFrameTime_);
 
     setStatus(TcpServer::RUNNING);
+
+    logger_->log("Server is startup");
     return true;
 }
 
@@ -73,6 +79,8 @@ bool TcpServer::open(const char* addr, int port, int backlog)
 void TcpServer::close()
 {
     assert(status_ == RUNNING);
+    logger_->log("Server shutting down...");
+
     setStatus(TcpServer::EXITING);
     eventLoop_.queueEvent(boost::bind(&TcpServer::shutdown, this));
 }
@@ -120,6 +128,15 @@ void TcpServer::config(Options optname, size_t val)
     }
 }
 
+void TcpServer::config(Options optname, dev::base::LoggerPtr logger)
+{
+    if (optname != TcpServer::LOGGER)
+        return;
+
+    logger_ = logger;
+    acceptor_.setLogger(logger_);
+}
+
 void TcpServer::_initWorkers(size_t workerCount)
 {
     while (workers_.size() < workerCount)
@@ -150,6 +167,7 @@ void TcpServer::_shutdownWorkers()
     if (workers_.empty())
     {
         setStatus(TcpServer::EXIT);
+        logger_->log("Server is shutdown");
         return;
     }
 
@@ -321,4 +339,6 @@ void TcpServer::doShutdownWorker(TcpWorker* worker /* = NULL */)
 
     workers_.clear();
     setStatus(TcpServer::EXIT);
+
+    logger_->log("Server is shutdown");
 }

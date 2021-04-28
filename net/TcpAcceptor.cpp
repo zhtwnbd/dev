@@ -12,6 +12,7 @@ using namespace dev::net;
 TcpAcceptor::TcpAcceptor()
 : status_(READY)
 , eventLoop_(NULL)
+, logger_(NULL)
 , sock_(SocketApi::socket(AF_INET, SOCK_STREAM))
 {
 
@@ -31,6 +32,11 @@ bool TcpAcceptor::open(const char* addr, int port, int backlog)
         sock_.reset(SocketApi::socket(AF_INET, SOCK_STREAM));
         if (!sock_.isValid())
             return false;
+    }
+
+    if (!sock_.setReuseAddr(true))
+    {
+        logger_->warning("%s, %s, setReuseAddr failed.", __FILE__, __FUNCTION__);
     }
 
     sock_t rawSock = sock_.getSocket();
@@ -70,6 +76,14 @@ void TcpAcceptor::handleInput(Socket* /*sock*/)
     {
         if (!SocketApi::setsocketnoblocking(newSock, true))
         {
+            logger_->warning("%s, %s, setsocketnoblocking failed.", __FILE__, __FUNCTION__);
+            SocketApi::close(newSock);
+            return;
+        }
+
+        if (!SocketApi::setsocketlinger(newSock, true))
+        {
+            logger_->warning("%s, %s, setsocketlinger failed.", __FILE__, __FUNCTION__);
             SocketApi::close(newSock);
             return;
         }

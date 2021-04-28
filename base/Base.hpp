@@ -9,6 +9,7 @@
 #define BASE_BASE_HPP_
 
 #include <dev/base/Runtime.hpp>
+#include <dev/base/Logger.hpp>
 #include <dev/base/Mutex.hpp>
 #include <dev/base/LockGuard.hpp>
 #include <dev/base/LockedQueue.hpp>

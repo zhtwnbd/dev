@@ -25,6 +25,7 @@ set(dev_SOURCES
 	Dev.hpp
 	base/Base.hpp
 	base/Runtime.hpp
+	base/Logger.hpp
 	base/Mutex.hpp
 	base/LockGuard.hpp
 	base/Thread.hpp

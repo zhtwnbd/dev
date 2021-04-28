@@ -9,6 +9,7 @@
 #define NET_TCPACCEPTOR_HPP_
 
 #include <boost/shared_ptr.hpp>
+#include <dev/base/Logger.hpp>
 #include <dev/net/SocketEventHandler.hpp>
 #include <dev/net/EventLoop.hpp>
 #include <dev/net/TcpConnection.hpp>
@@ -71,9 +72,12 @@ namespace dev
             void setStatus(Status status) { status_ = status; }
             Status getStatus(void) const { return status_; }
 
+            void setLogger(base::LoggerPtr logger){ logger_ = logger; }
+
         private:
             Status status_;
             EventLoop* eventLoop_;
+            base::LoggerPtr logger_;
             Socket sock_;
 
         private:

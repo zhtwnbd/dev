@@ -41,6 +41,20 @@ bool Socket::setNonBlocking(bool on)
     return SocketApi::setsocketnoblocking(sock_, on);
 }
 
+bool Socket::setReuseAddr(bool on /* = false */)
+{
+    int option = on ? 1 : 0;
+    return SocketApi::setsockopt(sock_, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
+}
+
+bool Socket::setLinger(bool on /* = false */)
+{
+    struct linger ling;
+    ling.l_onoff = on ? 1 : 0;
+    ling.l_linger = 0;
+    return SocketApi::setsockopt(sock_, SOL_SOCKET, SO_LINGER, &ling, sizeof(ling));
+}
+
 int Socket::receive(char* buff, size_t length, int flags /*= 0*/)
 {
     int ret = SocketApi::recv(sock_, buff, length, flags);
