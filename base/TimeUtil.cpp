@@ -15,6 +15,6 @@ mtime_t TimeUtil::fromStartup()
 #elif defined(__LINUX__)
 	struct timespec time;
 	clock_gettime(CLOCK_MONOTONIC, &time);
-	return mtime_t(time.tv_nsec / 1000000);
+	return mtime_t(time.tv_nsec / 1000000) + mtime_t(time.tv_sec * 1000);
 #endif
 }
