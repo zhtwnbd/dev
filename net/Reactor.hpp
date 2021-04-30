@@ -22,12 +22,14 @@ namespace dev
         public:
             enum EventType
             {
-                NONE,                   // 不对任何事件有兴趣
-                READ = 0x1,             // 对读事件有兴趣
-                WRITE = 0x2,            // 对写事件有兴趣
-                RDWR = READ | WRITE,    // 对读写事件有兴趣
-                EXCEP = 0x4,            // 对异常事件有兴趣
-                ALL = RDWR | EXCEP      // 对所有事件有兴趣
+                NONE,                   // 
+                READ = 0x1,             // 读
+                WRITE = 0x2,            // 写
+                EXCEP = 0x4,            // 异常
+                RDWR = READ | WRITE,    // 读/写
+                RDEX = READ | EXCEP,    // 读/异常
+                WREX = WRITE | EXCEP,   // 写/异常
+                ALL = RDWR | EXCEP      // 读/写/异常
             };
 
             enum Status

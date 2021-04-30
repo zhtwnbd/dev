@@ -66,32 +66,25 @@ namespace dev
             ~TcpConnection();
 
         public:
-            virtual void handleInput(Socket* sock = NULL);
-            virtual void handleOutput(Socket* sock = NULL);
-            virtual void handleException(Socket* sock = NULL);
-            virtual void handleClose(Socket* sock = NULL);
-            virtual void handleHeartBeat(Socket* sock = NULL);
+            virtual void handleInput(void);
+            virtual void handleOutput(void);
+            virtual void handleException(void);
+            virtual void handleClose(void);
+            virtual void handleHeartBeat(void);
 
         public:
             Socket& getSocket(void) { return sock_; }
             TcpConnectionInputStream& getInputStream(void) { return inputStream_; }
             TcpConnectionOutputStream& getOutputStream(void) { return outputStream_; }
-
             int getId(void) const { return id_; }
-
             EventLoop* getLoop(void) const { return eventLoop_; }
-
             Status getStatus(void) const { return status_; }
 
-        private:
-            void close(void);
-
-        private:
-            void reset(sock_t sock);
+        public:
+            void shutdown(void);
 
         private:
             void bind(EventLoop* eventLoop);
-            void unbind();
             void setId(int id) { id_ = id; }
             void setStatus(Status status) { status_ = status; }
 

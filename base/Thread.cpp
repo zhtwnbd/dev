@@ -102,7 +102,9 @@ void Thread::exit(void* retval /* = NULL */)
 
 void Thread::join()
 {
-    assert(status_ != READY && status_ != NOTREADY);
+    if (status_ == NOTREADY)
+        return;
+
 #if defined(__WINDOWS__)
     assert(thandle_ != 0 && thandle_ != -1);
     ::WaitForSingleObject((HANDLE)thandle_, INFINITE);

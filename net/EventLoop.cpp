@@ -28,6 +28,7 @@ EventLoop::EventLoop()
 #elif defined(_USE_EPOLL)
 , reactor_(new detail::EPollReactor())
 #endif
+, loopCounter_(0)
 {
 
 }
@@ -37,6 +38,7 @@ EventLoop::EventLoop(Reactor* reactor)
 , status_(READY)
 , frameTime_(20)
 , reactor_(reactor)
+, loopCounter_(0)
 {
 
 }
@@ -55,6 +57,8 @@ int EventLoop::run()
 
     while (status_ == RUNNING || status_ == EXITING)
     {
+        ++loopCounter_;
+
         mtime_t startTime = TimeUtil::fromStartup();
 
         reactor_->tick();

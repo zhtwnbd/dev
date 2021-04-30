@@ -32,6 +32,13 @@ namespace dev
         public:
             typedef boost::function<void(Socket*)> PassSocketPointerCB;
 
+            struct Statics
+            {
+                base::Thread::id tid;
+                int connInWorker;
+                unsigned long long loopCount;
+            };
+
         public:
             TcpWorker(void);
             ~TcpWorker(void);
@@ -41,8 +48,8 @@ namespace dev
             virtual void run(void);
 
         private:
-            EventLoop& getLoop () { return eventLoop; }
-            EventLoop* getLoopPointer () { return &eventLoop; }
+            EventLoop& getLoop() { return eventLoop_; }
+            EventLoop* getLoopPointer() { return &eventLoop_; }
             int getWorkerCount() { return connInWorker_; }
 
             void bindConnection (TcpConnectionPtr& conn);
@@ -54,12 +61,20 @@ namespace dev
             void incConnInWorker () { ++connInWorker_; }
             void decConnInWorker () { --connInWorker_; }
 
+            Statics getStatics() const 
+            { 
+                return{ 
+                getTid(), 
+                connInWorker_, 
+                eventLoop_.getLoopCounter() }; 
+            }
+
         private:
             void onSocketRemovedFromLoop (Socket* sock);
 
         private:
             volatile int connInWorker_;          // 当前工作线程处理的连接数量
-            EventLoop eventLoop;  
+            EventLoop eventLoop_;  
 
         private:
             PassWorkerPointerCB closingCallback_;

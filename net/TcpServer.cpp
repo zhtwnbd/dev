@@ -43,59 +43,67 @@ bool TcpServer::open(const char* addr, int port, int backlog)
     assert(status_ == TcpServer::READY);
     assert(logger_);
 
-    logger_->log("Server starting...");
-
-    // 启动监听器
+    //// 启动监听器
     if (!acceptor_.open(addr, port, backlog))
         return false;
     acceptor_.setMakeConnectionCallbck(
-        boost::bind(&TcpServer::makeTcpConnection, this));
+        boost::bind(&TcpServer::makeTcpConnection, this, _1));
     acceptor_.setConnectionEstablishedCallback(
         boost::bind(&TcpServer::connectionEstablished, this, _1));
     acceptor_.bind(&eventLoop_);
 
-    // 启动工作线程
+    //// 启动工作线程
+
+    // 没有配置工作线程，配置服务器线程作为工作线程使用
     if (configWorkers_ == 0)
         config(TcpServer::MASTERASWORKER, 1);
-    _initWorkers(size_t(configWorkers_));
+    // 初始化工作线程
+    doInitWorkers(size_t(configWorkers_));
+    // 启动工作线程
     __TS_EACH_VECTOR(workers_)
     {
-        workers_[x]->start();
+        __DV_TRY
+        {
+            workers_[x]->start();
+            ++runningWorkers_;
+        }
+        __DV_CATCH(std::exception& e)
+        {
+            logger_->log("start worker %d failed, %s", x, e.what());
+        }
     }
-    runningWorkers_ = workers_.size();
 
     // 配置主循环工作状态
     eventLoop_.getReactor()->setHeartBeatTime(connHeartTime_);
-    if (masterAsWorker_)
-        eventLoop_.setFrameTime(loopFrameTime_);
+    if (masterAsWorker_) eventLoop_.setFrameTime(loopFrameTime_);
 
     setStatus(TcpServer::RUNNING);
-
-    logger_->log("Server is startup");
     return true;
+}
+
+bool TcpServer::reopenAcceptor()
+{
+    assert(status_ != EXITING && status_ != EXIT);
+    if (!acceptor_.reopen())
+        return false;
+    acceptor_.bind(&eventLoop_);
+    return true;
+}
+
+void TcpServer::shutdownAcceptor()
+{
+    assert(status_ == RUNNING);
+    acceptor_.shutdown();
 }
 
 // 开始关闭服务器，服务器是否已经关闭需要检查服务器状态
 void TcpServer::close()
 {
     assert(status_ == RUNNING);
-    logger_->log("Server shutting down...");
-
     setStatus(TcpServer::EXITING);
     eventLoop_.queueEvent(boost::bind(&TcpServer::shutdown, this));
 }
 
-void TcpServer::closeConnection(TcpConnectionPtr& conn)
-{
-    conn->unbind();
-}
-
-void TcpServer::closeConnection(TcpConnection& conn)
-{
-    conn.unbind();
-}
-
-// 配置服务器
 void TcpServer::config(Options optname, size_t val)
 {
     assert(status_ == TcpServer::READY);
@@ -130,6 +138,8 @@ void TcpServer::config(Options optname, size_t val)
 
 void TcpServer::config(Options optname, dev::base::LoggerPtr logger)
 {
+    assert(status_ == TcpServer::READY);
+
     if (optname != TcpServer::LOGGER)
         return;
 
@@ -137,7 +147,31 @@ void TcpServer::config(Options optname, dev::base::LoggerPtr logger)
     acceptor_.setLogger(logger_);
 }
 
-void TcpServer::_initWorkers(size_t workerCount)
+void TcpServer::getStatics(struct Statics& statics)
+{
+    statics.configWorkers = configWorkers_;
+    statics.connHeartTime = connHeartTime_;
+    statics.connIdGen = connIdGen_;
+    statics.connInMaster = connInMaster_;
+    statics.isSize = isSizeCfg_;
+    statics.loopFrameTime = loopFrameTime_;
+    statics.masterAsWorker = masterAsWorker_;
+    statics.osSize = osSizeCfg_;
+    statics.runningWorkers = runningWorkers_;
+    statics.status = status_;
+    statics.totalConns = connInMaster_;
+    statics.masterLoopCount = eventLoop_.getLoopCounter();
+
+    __TS_EACH_VECTOR(workers_)
+    {
+        if (workers_[x]->getStatus() != TcpWorker::RUNNING)
+            continue;
+        statics.totalConns += workers_[x]->getWorkerCount();
+        statics.workerStatics.push_back(workers_[x]->getStatics());
+    }
+}
+
+void TcpServer::doInitWorkers(size_t workerCount)
 {
     while (workers_.size() < workerCount)
     {
@@ -156,18 +190,17 @@ void TcpServer::_initWorkers(size_t workerCount)
         }
         __DV_CATCH(std::exception& e)
         {
-            __DV_DUMP(e);
+            logger_->warning("initialize TcpWorker failed, %s", e.what());
             break;
         }
     }
 }
 
-void TcpServer::_shutdownWorkers()
+void TcpServer::doShutdownWorkers()
 {
     if (workers_.empty())
     {
         setStatus(TcpServer::EXIT);
-        logger_->log("Server is shutdown");
         if (serverShutdownCallback_)
             serverShutdownCallback_();
         return;
@@ -179,10 +212,11 @@ void TcpServer::_shutdownWorkers()
     }
 }
 
-void TcpServer::_bindConnectionToWorker(TcpConnectionPtr& conn)
+void TcpServer::doBindConnectionToWorker(TcpConnectionPtr& conn)
 {
     if (workers_.empty())
     {
+        incConnInMaster();
         conn->bind(&eventLoop_);
         return;
     }
@@ -213,24 +247,23 @@ void TcpServer::_bindConnectionToWorker(TcpConnectionPtr& conn)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//// 回调函数
 
 // 在主循环中执行，开始关闭服务器
 void TcpServer::shutdown()
 {
     assert(status_ == TcpServer::EXITING);
-    acceptor_.unbind();
+    acceptor_.shutdown();
 }
 
 // 在主循环中执行，创建Tcp连接对象
-TcpConnectionPtr& TcpServer::makeTcpConnection(void)
+TcpConnectionPtr& TcpServer::makeTcpConnection(sock_t sock)
 {
     assert(status_ == TcpServer::RUNNING);
     assert(connectionFactory_);
 
     // 创建连接
     net::TcpConnectionPtr conn = connectionFactory_->createConnection(
-        INVALID_SOCKET, isSizeCfg_, osSizeCfg_);
+        sock, isSizeCfg_, osSizeCfg_);
     if (conn)
     {
         int connId = ++connIdGen_;
@@ -257,13 +290,12 @@ void TcpServer::connectionEstablished(dev::net::TcpConnectionPtr& conn)
     conn->setHeartBeatCallback(heartBeatCallback_);
     conn->setWritableCallback(canWriteCallback_);
 
-    _bindConnectionToWorker(conn);
+    doBindConnectionToWorker(conn);
 
     if (connectEstabedCallback_)
         connectEstabedCallback_(conn);
 }
 
-// 在主循环或其他循环中执行，处理连接关闭事件
 void TcpServer::onSocketRemovedFromLoop(dev::net::Socket* sock)
 {
     if (sock != &acceptor_.getSocket())
@@ -291,10 +323,11 @@ void TcpServer::closeTcpConnection(int connId)
         if (conn->getLoop() == &eventLoop_)
             descConnInMaster();
 
+        // 服务器正在关闭并且连接已经全部关闭
         if ((status_ == TcpServer::EXITING)
             && connections_.empty())
         {
-            _shutdownWorkers();
+            doShutdownWorkers();
         }
     }
 }
@@ -302,19 +335,23 @@ void TcpServer::closeTcpConnection(int connId)
 // 在主循环中执行，关闭接收器
 void TcpServer::closeAcceptor()
 {
-    assert(status_ == TcpServer::EXITING);
     acceptor_.close();
-    if (connections_.size() == 0)
-    {
-        _shutdownWorkers();
-        return;
-    }
 
-    // 关闭所有连接，线程安全
-    for (ConnectionMap::iterator it = connections_.begin();
-        it != connections_.end(); ++it)
+    // 服务器正在退出，关闭连接和工作线程
+    if (status_ == EXITING)
     {
-        TcpServer::closeConnection(it->second);
+        if (connections_.size() == 0)
+        {
+            doShutdownWorkers();
+            return;
+        }
+
+        // 关闭所有连接，线程安全
+        for (ConnectionMap::iterator it = connections_.begin();
+            it != connections_.end(); ++it)
+        {
+            it->second->shutdown();
+        }
     }
 }
 
@@ -330,6 +367,7 @@ void TcpServer::onWorkerShutdown(TcpWorker* worker /* = NULL */)
 void TcpServer::doShutdownWorker(TcpWorker* worker /* = NULL */)
 {
     assert(status_ == TcpServer::EXITING);
+
     --runningWorkers_;
     if (runningWorkers_ != 0)
         return;
@@ -341,8 +379,6 @@ void TcpServer::doShutdownWorker(TcpWorker* worker /* = NULL */)
 
     workers_.clear();
     setStatus(TcpServer::EXIT);
-
-    logger_->log("Server is shutdown");
 
     if (serverShutdownCallback_)
         serverShutdownCallback_();

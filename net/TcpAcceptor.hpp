@@ -8,6 +8,7 @@
 #ifndef NET_TCPACCEPTOR_HPP_
 #define NET_TCPACCEPTOR_HPP_
 
+#include <string>
 #include <boost/shared_ptr.hpp>
 #include <dev/base/Logger.hpp>
 #include <dev/net/SocketEventHandler.hpp>
@@ -26,7 +27,7 @@ namespace dev
             friend class TcpServer;
 
         public:
-            typedef boost::function<TcpConnectionPtr&(void)> RtnTcpConnectionPtrRefCB;
+            typedef boost::function<TcpConnectionPtr&(sock_t)> RtnTcpConnectionPtrRefCB;
             typedef boost::function<void(TcpConnectionPtr&)> PassTcpConnectionPtrRefCB;
 
         public:
@@ -34,6 +35,7 @@ namespace dev
             {
                 READY = 1,
                 RUNNING,
+                EXITING,
                 EXIT
             };
 
@@ -43,14 +45,16 @@ namespace dev
 
         public:
             bool open(const char* addr, int port, int backlog);
+            bool reopen(void);
             void close(void);
+            void shutdown(void);
 
         public:
-            virtual void handleInput(Socket* sock = NULL);
-            virtual void handleOutput(Socket* sock = NULL);
-            virtual void handleException(Socket* sock = NULL);
-            virtual void handleClose(Socket* sock = NULL);
-            virtual void handleHeartBeat(Socket* sock = NULL);
+            virtual void handleInput(void);
+            virtual void handleOutput(void);
+            virtual void handleException(void);
+            virtual void handleClose(void);
+            virtual void handleHeartBeat(void);
 
         public:
             void setMakeConnectionCallbck(RtnTcpConnectionPtrRefCB callback)
@@ -79,6 +83,10 @@ namespace dev
             EventLoop* eventLoop_;
             base::LoggerPtr logger_;
             Socket sock_;
+
+            std::string addr_;
+            int port_;
+            int backlog_;
 
         private:
             RtnTcpConnectionPtrRefCB newConnectionCB_;

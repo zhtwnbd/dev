@@ -25,7 +25,7 @@ TcpAcceptor::~TcpAcceptor()
 
 bool TcpAcceptor::open(const char* addr, int port, int backlog)
 {
-    assert(status_ != RUNNING);
+    assert(status_ == READY || status_ == EXIT);
 
     if (!sock_.isValid())
     {
@@ -56,20 +56,51 @@ bool TcpAcceptor::open(const char* addr, int port, int backlog)
     if (!SocketApi::listen(rawSock, backlog))
         return false;
 
+    // 保存监听数据
+    addr_ = addr;
+    port_ = port;
+    backlog_ = backlog;
+
     setStatus(RUNNING);
     return true;
+}
+
+bool TcpAcceptor::reopen()
+{
+    return TcpAcceptor::open(addr_.c_str(), port_, backlog_);
 }
 
 void TcpAcceptor::close()
 {
     sock_.close();
+    setStatus(EXIT);
 }
 
-void TcpAcceptor::handleInput(Socket* /*sock*/)
+void TcpAcceptor::shutdown()
 {
     assert(status_ == RUNNING);
+    assert(eventLoop_);
+    eventLoop_->removeSocket(&sock_);
+    eventLoop_ = NULL;
+    setStatus(EXITING);
+}
+
+void TcpAcceptor::bind(EventLoop* eventLoop)
+{
+    assert(eventLoop_ == NULL);
+    eventLoop_ = eventLoop;
+    eventLoop_->addSocket(&sock_, Reactor::RDEX, this);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void TcpAcceptor::handleInput(void)
+{
     assert(newConnectionCB_);
     assert(connectionEstablishedCB_);
+
+    if (status_ != RUNNING)
+        return;
 
     sock_t newSock = SocketApi::accept(sock_.getSocket(), NULL, NULL);
     if (newSock != INVALID_SOCKET)
@@ -90,49 +121,40 @@ void TcpAcceptor::handleInput(Socket* /*sock*/)
 
         __DV_TRY
         {
-            TcpConnectionPtr& conn = newConnectionCB_();
+            TcpConnectionPtr& conn = newConnectionCB_(newSock);
             if (conn)
             {
-                conn->reset(newSock);
                 conn->getSocket().setUserDataInt(conn->getId());
                 connectionEstablishedCB_(conn);
             }
         }
-        __DV_CATCH(std::exception& /*e*/)
+        __DV_CATCH(...)
         {
             SocketApi::close(newSock);
         }
     }
 }
 
-void TcpAcceptor::handleOutput(Socket* /*sock*/)
+void TcpAcceptor::handleOutput(void)
 {
 }
 
-void TcpAcceptor::handleException(Socket* /*sock*/)
+void TcpAcceptor::handleException(void)
 {
+    // 监听套接字出错，关闭监听器
+    if (status_ == RUNNING)
+    {
+        logger_->error("TcpAcceptor error, shutting down it");
+        shutdown();
+    }
 }
 
-void TcpAcceptor::handleClose(Socket* /*sock*/)
-{
-    setStatus(EXIT);
-}
-
-void TcpAcceptor::handleHeartBeat(Socket* /*sock*/)
+void TcpAcceptor::handleClose(void)
 {
 
 }
 
-void TcpAcceptor::bind(EventLoop* eventLoop)
+void TcpAcceptor::handleHeartBeat(void)
 {
-    assert(eventLoop_ == NULL);
-    eventLoop_ = eventLoop;
-    eventLoop_->addSocket(&sock_, Reactor::READ, this);
-}
 
-void TcpAcceptor::unbind()
-{
-    assert(eventLoop_);
-    eventLoop_->removeSocket(&sock_);
-    eventLoop_ = NULL;
 }

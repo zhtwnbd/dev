@@ -72,7 +72,7 @@ bool SelectReactor::removeSocket(Socket* sock)
 
     if (handler)
     {
-        handler->handleClose(sock);
+        handler->handleClose();
     }
 
 #if defined(__LINUX__)
@@ -127,22 +127,22 @@ void SelectReactor::tick(int timeout)
             sock_t rawSock = sock->getSocket();
             if (FD_ISSET(rawSock, &exceptfds_[USE]))
             {
-                it->second->handleException(sock);
+                it->second->handleException();
             }
 
             if (FD_ISSET(rawSock, &readfds_[USE]))
             {
-                it->second->handleInput(sock);
+                it->second->handleInput();
             }
 
             if (FD_ISSET(rawSock, &writefds_[USE]))
             {
-                it->second->handleOutput(sock);
+                it->second->handleOutput();
             }
 
             if (doHeartBeat)
             {
-                it->second->handleHeartBeat(sock);
+                it->second->handleHeartBeat();
             }
         }
     }

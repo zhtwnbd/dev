@@ -11,9 +11,9 @@ using namespace dev::net;
 
 TcpWorker::TcpWorker()
 : connInWorker_(0)
-, eventLoop()
+, eventLoop_()
 {
-    eventLoop.setRemoveSocketCallback(
+    eventLoop_.setRemoveSocketCallback(
         boost::bind(&TcpWorker::onSocketRemovedFromLoop, this, _1));
 }
 
@@ -24,19 +24,19 @@ TcpWorker::~TcpWorker()
 
 void TcpWorker::stop()
 {
-    eventLoop.stop();
+    eventLoop_.stop();
 }
 
 void TcpWorker::run()
 {
-    eventLoop.run();
+    eventLoop_.run();
     closingCallback_(this);
 }
 
 void TcpWorker::bindConnection(TcpConnectionPtr& conn)
 {
     incConnInWorker();
-    conn->bind(&eventLoop);
+    conn->bind(&eventLoop_);
 }
 
 void TcpWorker::onSocketRemovedFromLoop(Socket* sock)

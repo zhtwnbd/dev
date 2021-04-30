@@ -60,6 +60,8 @@ namespace dev
             void setFrameTime(base::mtime_t time) { frameTime_ = time; }
             int getId(void) const { return id_; }
 
+            unsigned long long getLoopCounter(void) const { return loopCounter_; }
+
         private:
             void setStatus(Status status) { status_ = status; }
             void setRemoveSocketCallback(PassSocketPointerCB callback) { removeSocketCB_ = callback; }
@@ -73,6 +75,8 @@ namespace dev
             Status status_;                 // 状态
             base::mtime_t frameTime_;       // 帧时间(毫秒)，默认每秒50帧
             ReactorPtr reactor_;            // 网络消息派发器
+
+            volatile unsigned long long loopCounter_;    // 循环次数
 
         private:
             PassSocketPointerCB removeSocketCB_;

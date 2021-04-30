@@ -12,8 +12,9 @@ using namespace dev::net;
 TcpConnection::TcpConnection(sock_t sock, size_t isSize/* = 1024 * 32*/,
     size_t osSize/* = 1024  * 32*/)
     : id_(0)
-    , status_(NOTCONNECT)
+    , status_(CONNECT)
     , sock_(sock)
+    , eventLoop_(NULL)
     , inputStream_(sock_, isSize)
     , outputStream_(sock_, osSize)
 {
@@ -23,8 +24,9 @@ TcpConnection::TcpConnection(sock_t sock, size_t isSize/* = 1024 * 32*/,
 TcpConnection::TcpConnection(sock_t sock, char* ibuff, char* obuff, size_t isSize/* = 1024 * 32*/,
     size_t osSize/* = 1024  * 32*/)
     : id_(0)
-    , status_(NOTCONNECT)
+    , status_(CONNECT)
     , sock_(sock)
+    , eventLoop_(NULL)
     , inputStream_(sock_, ibuff, isSize)
     , outputStream_(sock_, obuff, osSize)
 {
@@ -33,27 +35,7 @@ TcpConnection::TcpConnection(sock_t sock, char* ibuff, char* obuff, size_t isSiz
 
 TcpConnection::~TcpConnection()
 {
-}
 
-void TcpConnection::close()
-{
-    sock_.close();
-}
-
-void TcpConnection::reset(sock_t sock)
-{
-    sock_.reset(sock);
-
-    inputStream_.reset();
-    outputStream_.reset();
-
-    onInputMessageCB_ = NULL;
-    onErrorCB_ = NULL;
-    closingCB_ = NULL;
-
-    eventLoop_ = NULL;
-
-    setStatus(TcpConnection::CONNECT);
 }
 
 void TcpConnection::bind(EventLoop* eventLoop)
@@ -63,7 +45,7 @@ void TcpConnection::bind(EventLoop* eventLoop)
     eventLoop_->addSocket(&sock_, Reactor::ALL, this);
 }
 
-void TcpConnection::unbind()
+void TcpConnection::shutdown()
 {
     if (status_ != TcpConnection::CONNECT)
         return;
@@ -75,38 +57,39 @@ void TcpConnection::unbind()
 
 void TcpConnection::doError()
 {
-    if (onErrorCB_) onErrorCB_(*this);
-    TcpServer::closeConnection(*this);
+    assert(onErrorCB_);
+    onErrorCB_(*this);
+    shutdown();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //// 回调函数
 
-void TcpConnection::handleException(Socket* sock /* = NULL */)
+void TcpConnection::handleException(void)
 {
     if (status_ == TcpConnection::CONNECT)
         doError();
 }
 
-void TcpConnection::handleInput(Socket* sock /* = NULL */)
+void TcpConnection::handleInput(void)
 {
+    assert(onInputMessageCB_);
     if (status_ != TcpConnection::CONNECT)
         return;
 
     if ((SOCKET_ERROR != inputStream_.fill()))
     {
         if (inputStream_.size() > 0)
-        {
             onInputMessageCB_(*this, inputStream_);
-        }
         return;
     }
 
     doError();
 }
 
-void TcpConnection::handleOutput(Socket* sock /* = NULL */)
+void TcpConnection::handleOutput(void)
 {
+    assert(canWriteCB_);
     if (status_ != TcpConnection::CONNECT)
         return;
 
@@ -120,18 +103,14 @@ void TcpConnection::handleOutput(Socket* sock /* = NULL */)
     doError();
 }
 
-void TcpConnection::handleClose(Socket* sock /* = NULL */)
+void TcpConnection::handleClose(void)
 {
-    close();
-
-    if (closingCB_)
-        closingCB_(*this);
-
-    setStatus(TcpConnection::CLOSED);
+    assert(closingCB_);
+    closingCB_(*this);
 }
 
-void TcpConnection::handleHeartBeat(Socket* sock /* = NULL */)
+void TcpConnection::handleHeartBeat(void)
 {
-    if (onHeartBeatCB_)
-        onHeartBeatCB_(*this);
+    assert(onHeartBeatCB_);
+    onHeartBeatCB_(*this);
 }

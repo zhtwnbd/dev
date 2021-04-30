@@ -11,7 +11,7 @@
 #if defined(__LINUX__)
 #include <vector>
 #endif
-#include <map>
+#include <boost/unordered_map.hpp>
 #include <dev/base/TimeUtil.hpp>
 #include <dev/net/Socket.hpp>
 #include <dev/net/SocketEventHandler.hpp>
@@ -61,7 +61,7 @@ namespace dev
                 fd_set writefds_[SUM];
                 fd_set exceptfds_[SUM];
 
-                typedef std::map<Socket*, SocketEventHandler*> EventHandlerMap;
+                typedef boost::unordered_map<Socket*, SocketEventHandler*> EventHandlerMap;
                 EventHandlerMap handlerMap_;
             };
         }

@@ -22,11 +22,11 @@ namespace dev
             virtual ~SocketEventHandler(){}
 
         public:
-            virtual void handleInput(Socket* sock = NULL) = 0;
-            virtual void handleOutput(Socket* sock = NULL) = 0;
-            virtual void handleException(Socket* sock = NULL) = 0;
-            virtual void handleClose(Socket* sock = NULL) = 0;
-            virtual void handleHeartBeat(Socket* sock = NULL) = 0;
+            virtual void handleInput(void) = 0;
+            virtual void handleOutput(void) = 0;
+            virtual void handleException(void) = 0;
+            virtual void handleClose(void) = 0;
+            virtual void handleHeartBeat(void) = 0;
         };
     }
 }
