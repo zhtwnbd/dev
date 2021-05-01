@@ -24,7 +24,7 @@ endif()
 set(dev_SOURCES
 	Dev.hpp
 	base/Base.hpp
-	base/Atom.hpp
+	base/Atomic.hpp
 	base/Runtime.hpp
 	base/Logger.hpp
 	base/Mutex.hpp
