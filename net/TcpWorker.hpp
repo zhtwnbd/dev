@@ -10,6 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/function.hpp>
+#include <dev/base/Atom.hpp>
 #include <dev/base/Thread.hpp>
 #include <dev/net/Socket.hpp>
 #include <dev/net/EventLoop.hpp>
@@ -59,8 +60,8 @@ namespace dev
             void setCloseCallback (PassWorkerPointerCB callback) { closingCallback_ = callback; }
             void setSocketRemoveCallback (PassSocketPointerCB callback) { socketRemoveCallback_ = callback; }
 
-            void incConnInWorker () { ++connInWorker_; }
-            void decConnInWorker () { --connInWorker_; }
+            void incConnInWorker() { base::atom_inc((long*)&connInWorker_); }
+            void decConnInWorker() { base::atom_dec((long*)&connInWorker_); }
 
             Statics getStatics() const 
             { 

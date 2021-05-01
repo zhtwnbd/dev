@@ -11,6 +11,7 @@
 #include <vector>
 #include <boost/unordered_map.hpp>
 #include <boost/noncopyable.hpp>
+#include <dev/base/Atom.hpp>
 #include <dev/base/Logger.hpp>
 #include <dev/net/Socket.hpp>
 #include <dev/net/EventLoop.hpp>
@@ -204,8 +205,8 @@ namespace dev
             void doShutdownWorkers();
             void doBindConnectionToWorker(TcpConnectionPtr& conn);
 
-            void incConnInMaster() { ++connInMaster_; }
-            void descConnInMaster() { --connInMaster_; }
+            void incConnInMaster() { base::atom_inc((long*)connInMaster_); }
+            void descConnInMaster() { base::atom_dec((long*)connInMaster_); }
 
         private:
             volatile int connIdGen_;            // 连接ID生成
@@ -244,7 +245,7 @@ namespace dev
 
         private:
             bool masterAsWorker_;
-            volatile  int connInMaster_;		// 主循环执行的连接数量，只在masterAsWorker_为true时有效
+            volatile int connInMaster_;		// 主循环执行的连接数量，只在masterAsWorker_为true时有效
 
             int connHeartTime_;			        // 连接心跳间隔时间,默认60秒
             base::mtime_t masterLoopFrameTime_; // 主循环帧时间
