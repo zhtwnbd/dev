@@ -9,7 +9,10 @@
 using namespace dev::net;
 
 #if defined(__LINUX__)
-#define min std::min
+inline size_t min(size_t a, size_t b)
+{
+	return (a > b) ? b : a;
+}
 #endif
 
 TcpConnectionInputStream::TcpConnectionInputStream(Socket& sock, size_t size)
