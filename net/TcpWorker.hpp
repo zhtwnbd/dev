@@ -10,7 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/function.hpp>
-#include <dev/base/Atom.hpp>
+#include <dev/base/Atomic.hpp>
 #include <dev/base/Thread.hpp>
 #include <dev/net/Socket.hpp>
 #include <dev/net/EventLoop.hpp>

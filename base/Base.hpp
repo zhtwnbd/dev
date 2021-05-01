@@ -8,7 +8,7 @@
 #ifndef BASE_BASE_HPP_
 #define BASE_BASE_HPP_
 
-#include <dev/base/Atom.hpp>
+#include <dev/base/Atomic.hpp>
 #include <dev/base/Runtime.hpp>
 #include <dev/base/Logger.hpp>
 #include <dev/base/Mutex.hpp>

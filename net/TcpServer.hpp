@@ -11,7 +11,7 @@
 #include <vector>
 #include <boost/unordered_map.hpp>
 #include <boost/noncopyable.hpp>
-#include <dev/base/Atom.hpp>
+#include <dev/base/Atomic.hpp>
 #include <dev/base/Logger.hpp>
 #include <dev/net/Socket.hpp>
 #include <dev/net/EventLoop.hpp>
