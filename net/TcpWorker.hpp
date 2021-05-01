@@ -60,8 +60,8 @@ namespace dev
             void setCloseCallback (PassWorkerPointerCB callback) { closingCallback_ = callback; }
             void setSocketRemoveCallback (PassSocketPointerCB callback) { socketRemoveCallback_ = callback; }
 
-            void incConnInWorker() { base::atom_inc((long*)&connInWorker_); }
-            void decConnInWorker() { base::atom_dec((long*)&connInWorker_); }
+            void incConnInWorker() { base::atom_inc32((uint32_t*)&connInWorker_); }
+            void decConnInWorker() { base::atom_dec32((uint32_t*)&connInWorker_); }
 
             Statics getStatics() const 
             { 

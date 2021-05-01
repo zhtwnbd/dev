@@ -52,7 +52,7 @@ namespace dev
             int receive(char* buff, size_t length, int flags = 0);
             int send(const char* buff, size_t length, int flags = 0);
 
-        private:
+        public:
             void close(void);
             
         private:

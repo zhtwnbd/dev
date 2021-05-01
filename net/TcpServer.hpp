@@ -205,8 +205,8 @@ namespace dev
             void doShutdownWorkers();
             void doBindConnectionToWorker(TcpConnectionPtr& conn);
 
-            void incConnInMaster() { base::atom_inc((long*)connInMaster_); }
-            void descConnInMaster() { base::atom_dec((long*)connInMaster_); }
+            void incConnInMaster() { base::atom_inc32((uint32_t*)&connInMaster_); }
+            void descConnInMaster() { base::atom_dec32((uint32_t*)&connInMaster_); }
 
         private:
             volatile int connIdGen_;            // 连接ID生成

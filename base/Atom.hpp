@@ -8,6 +8,7 @@
 #ifndef BASE_ATOM_HPP_
 #define BASE_ATOM_HPP_
 
+#include <stdint.h>
 #if defined(__WINDOWS__)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -20,35 +21,52 @@ namespace dev
     namespace base
     {  
 #if defined(__WINDOWS__)
-        inline unsigned int atom_inc(unsigned int* x)
+
+        inline uint16_t atom_inc16(uint16_t* x)
         {
-            return ::InterlockedIncrement(x);
+            return uint16_t(::InterlockedIncrement16((short*)x));
         }
 
-        inline unsigned long atom_inc(unsigned long* x)
+        inline uint32_t atom_inc32(uint32_t* x)
         {
-            return ::InterlockedIncrement(x);
+            return uint32_t(::InterlockedIncrement((long*)x));
         }
 
-        inline long atom_inc(long* x)
+        inline uint64_t atom_inc64(uint64_t* x)
         {
-            return ::InterlockedIncrement(x);
+            return uint64_t(::InterlockedIncrement64((long long*)x));
         }
 
-        inline unsigned int atom_dec(unsigned int* x)
+        inline uint16_t atom_dec16(uint16_t* x)
         {
-            return ::InterlockedDecrement(x);
+            return uint16_t(::InterlockedDecrement16((short*)x));
         }
 
-        inline unsigned long atom_dec(unsigned long* x)
+        inline uint32_t atom_dec32(uint32_t* x)
         {
-            return ::InterlockedDecrement(x);
+            return uint32_t(::InterlockedDecrement((long*)x));
         }
 
-        inline long atom_dec(long* x)
+        inline uint64_t atom_dec64(uint64_t* x)
         {
-            return ::InterlockedDecrement(x);
+            return uint64_t(::InterlockedDecrement64((long long*)x));
         }
+
+        inline uint16_t atom_add16(uint16_t* x, uint16_t v)
+        {
+            return uint16_t(::InterlockedAdd((long*)x, v));
+        }
+
+        inline uint32_t atom_add32(uint32_t* x, uint32_t v)
+        {
+            return uint32_t(::InterlockedAdd((long*)x, v));
+        }
+
+        inline uint64_t atom_add64(uint64_t* x, uint64_t v)
+        {
+            return uint64_t(::InterlockedAdd64((long long*)x, v));
+        }
+
 #endif
     }
 }
