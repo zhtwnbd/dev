@@ -64,7 +64,7 @@ bool EPollReactor::removeSocket(Socket* sock)
 
     if (handler)
     {
-        handler->handleClose(sock);
+        handler->handleClose();
     }
 
     return true;
@@ -103,13 +103,13 @@ void EPollReactor::tick(int timeout)
 
     		uint32_t fdevents = events[x].events;
     		if (fdevents & EPOLLERR)
-    			handler->handleException(NULL);
+    			handler->handleException();
     		if (fdevents & EPOLLIN)
-    			handler->handleInput(NULL);
+    			handler->handleInput();
     		if (fdevents & EPOLLOUT)
-    			handler->handleOutput(NULL);
+    			handler->handleOutput();
     		if (doHeartBeat)
-    			handler->handleHeartBeat(NULL);
+    			handler->handleHeartBeat();
     	}
     }
 }
