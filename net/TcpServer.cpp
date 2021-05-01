@@ -27,8 +27,8 @@ TcpServer::TcpServer(EventLoop& eventLoop)
 , masterAsWorker_(false)
 , connInMaster_(0)
 , connHeartTime_(60000)
-, loopFrameTime_(0)
 , masterLoopFrameTime_(0)
+, loopFrameTime_(0)
 {
     eventLoop_.setRemoveSocketCallback(
         boost::bind(&TcpServer::onSocketRemovedFromLoop, this, _1));
