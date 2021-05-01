@@ -12,7 +12,7 @@ using namespace dev::net;
 TcpAcceptor::TcpAcceptor()
 : status_(READY)
 , eventLoop_(NULL)
-, logger_(NULL)
+, logger_()
 , sock_(SocketApi::socket(AF_INET, SOCK_STREAM))
 {
 

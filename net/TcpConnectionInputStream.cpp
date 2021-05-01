@@ -54,7 +54,8 @@ ssize_t TcpConnectionInputStream::fill()
 
         if (bytsRead == 0)
         {
-            break;
+            // 对方关闭了连接
+            return SOCKET_ERROR;
         }
 
         write(buff, (size_t)bytsRead);

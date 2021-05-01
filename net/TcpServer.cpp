@@ -18,7 +18,7 @@ for (size_t x = 0; x < size; ++x)   \
 TcpServer::TcpServer(EventLoop& eventLoop)
 : connIdGen_(0)
 , status_(READY)
-, logger_(NULL)
+, logger_()
 , eventLoop_(eventLoop)
 , isSizeCfg_(0x1000)
 , osSizeCfg_(0x1000)
