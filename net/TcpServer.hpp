@@ -196,7 +196,6 @@ namespace dev
             void closeTcpConnection(int connId);
             void closeAcceptor();
             void onSocketRemovedFromLoop(dev::net::Socket* sock);
-            void shutdown(void);
             void onWorkerShutdown(TcpWorker* worker = NULL);
             void doShutdownWorker(TcpWorker* worker = NULL);
 

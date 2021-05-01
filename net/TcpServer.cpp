@@ -102,7 +102,7 @@ void TcpServer::close()
 {
     assert(status_ == RUNNING);
     setStatus(TcpServer::EXITING);
-    eventLoop_.queueEvent(boost::bind(&TcpServer::shutdown, this));
+    acceptor_.shutdown();
 }
 
 void TcpServer::config(Options optname, size_t val)
@@ -252,13 +252,6 @@ void TcpServer::doBindConnectionToWorker(TcpConnectionPtr& conn)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// 在主循环中执行，开始关闭服务器
-void TcpServer::shutdown()
-{
-    assert(status_ == TcpServer::EXITING);
-    acceptor_.shutdown();
-}
 
 // 在主循环中执行，创建Tcp连接对象
 TcpConnectionPtr& TcpServer::makeTcpConnection(sock_t sock)
