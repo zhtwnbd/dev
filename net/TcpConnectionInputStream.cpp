@@ -35,7 +35,7 @@ ssize_t TcpConnectionInputStream::fill()
     if (space() == 0)
         return 0;
 
-    char buff[0x1000];
+    char buff[0x4000];
     ssize_t bytsReadAll = 0;
 
     while (space() > 0)

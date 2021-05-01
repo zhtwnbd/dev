@@ -31,7 +31,7 @@ bool TcpConnectionOutputStream::flush()
         return true;
 
     // 发送缓冲区
-    char sendBuf[0x1000];
+    char sendBuf[0x4000];
 
     while (size() > 0)
     {
