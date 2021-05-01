@@ -63,9 +63,10 @@ namespace dev
             unsigned long long getLoopCounter(void) const { return loopCounter_; }
             base::mtime_t getFrameSystemTime(void) const { return frameSysTime_; }
 
+            void setRemoveSocketCallback(PassSocketPointerCB callback) { removeSocketCB_ = callback; }
+
         private:
             void setStatus(Status status) { status_ = status; }
-            void setRemoveSocketCallback(PassSocketPointerCB callback) { removeSocketCB_ = callback; }
 
         private:
             void doAddSocket(Socket* sock, Reactor::EventType events, SocketEventHandler* handler);

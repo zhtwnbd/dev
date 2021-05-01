@@ -35,7 +35,7 @@ bool TcpConnectionOutputStream::flush()
 
     while (size() > 0)
     {
-        size_t bytsRead = read(sendBuf, sizeof(sendBuf));
+        size_t bytsRead = peek(sendBuf, sizeof(sendBuf));
 
         while (bytsRead > 0)
         {
@@ -49,6 +49,7 @@ bool TcpConnectionOutputStream::flush()
             }
 
             bytsRead -= (size_t)bytsSend;
+            skip(ssize_t(bytsSend));
         }
     }
 

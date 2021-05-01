@@ -23,6 +23,7 @@ namespace dev
             friend class TcpConnection;
             friend class TcpAcceptor;
 
+        public:
             Socket(int domain, int type, int protocol = 0);
             Socket(sock_t sockfd);
             ~Socket();
@@ -43,16 +44,17 @@ namespace dev
             int getUserDataInt() { return userData_.ival; }
             long getUserDataLong() { return userData_.lval; }
 
+            void setUserDataPtr(void* pV) { userData_.ptr = pV; }
+            void setUserDataInt(int x) { userData_.ival = x; }
+            void setUserDataLong(long x) { userData_.lval = x; }
+
         public:
             int receive(char* buff, size_t length, int flags = 0);
             int send(const char* buff, size_t length, int flags = 0);
 
         private:
             void close(void);
-            void setUserDataPtr(void* pV) { userData_.ptr = pV; }
-            void setUserDataInt(int x) { userData_.ival = x; }
-            void setUserDataLong(long x) { userData_.lval = x; }
-
+            
         private:
             sock_t sock_;   // 系统套接字
 

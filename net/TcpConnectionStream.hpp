@@ -48,6 +48,7 @@ namespace dev
 
         protected:
             size_t peek(char* buf, size_t length);
+            size_t skip(size_t length);
 
         protected:
             /**
