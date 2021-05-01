@@ -40,7 +40,8 @@ namespace dev
                 MASTERASWORKER,	    // 主线程作为工作线程使用(处理连接)
                 CONNHEARTBEATTIME,	// 连接心跳间隔
                 FRAMETIME,		    // 帧时间
-                LOGGER              // 日志记录器
+                LOGGER,             // 日志记录器
+                MASTERFRAMETIME,    // 主循环帧时间
             };
 
             enum Status
@@ -60,11 +61,13 @@ namespace dev
                 int configWorkers;                  // 配置的工作线程数
                 int runningWorkers;                 // 运行的工作线程数
                 bool masterAsWorker;                // 服务器线程作为工作线程
+                base::mtime_t masterLoopFrameSysTime;   // 服务器主循环帧执行时间
                 unsigned long long masterLoopCount; // 主循环循环次数
                 int connInMaster;                   // 服务器线程持有的连接数
                 int totalConns;                     // 总连接数
                 int connHeartTime;                  // 连接心跳时间(毫秒)
                 base::mtime_t loopFrameTime;        // 循环帧时间(毫秒)
+                base::mtime_t masterLoopFrameTime;  // 主循环帧时间(毫秒)
                 std::vector<TcpWorker::Statics> workerStatics;  // 工作线程状态
             };
         public:
@@ -245,6 +248,7 @@ namespace dev
             volatile  int connInMaster_;		// 主循环执行的连接数量，只在masterAsWorker_为true时有效
 
             int connHeartTime_;			        // 连接心跳间隔时间,默认60秒
+            base::mtime_t masterLoopFrameTime_; // 主循环帧时间
             base::mtime_t loopFrameTime_;	    // 事件循环帧时间，默认关闭，关闭时执行该EventLoop的线程会busy-loop
         };
     }

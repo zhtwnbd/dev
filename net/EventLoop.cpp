@@ -23,6 +23,7 @@ EventLoop::EventLoop()
 : id_(++sIDGEN_)
 , status_(READY)
 , frameTime_(20)
+, frameSysTime_(0)
 #if defined(_USE_SELECT)
 , reactor_(new detail::SelectReactor())
 #elif defined(_USE_EPOLL)
@@ -37,6 +38,7 @@ EventLoop::EventLoop(Reactor* reactor)
 : id_(++sIDGEN_)
 , status_(READY)
 , frameTime_(20)
+, frameSysTime_(0)
 , reactor_(reactor)
 , loopCounter_(0)
 {
@@ -77,10 +79,10 @@ int EventLoop::run()
             continue;
         }
 
-        mtime_t timeElapsed = TimeUtil::fromStartup() - startTime;
-        if (frameTime_ != 0 && (timeElapsed < frameTime_))
+        frameSysTime_ = TimeUtil::fromStartup() - startTime;
+        if (frameTime_ != 0 && (frameSysTime_ < frameTime_))
         {
-            Thread::sleep(frameTime_ - timeElapsed);
+            Thread::sleep(frameTime_ - frameSysTime_);
         }
     }
 

@@ -36,6 +36,7 @@ namespace dev
             {
                 base::Thread::id tid;
                 int connInWorker;
+                base::mtime_t frameSysTime;
                 unsigned long long loopCount;
             };
 
@@ -66,6 +67,7 @@ namespace dev
                 return{ 
                 getTid(), 
                 connInWorker_, 
+                eventLoop_.getFrameSystemTime(),
                 eventLoop_.getLoopCounter() }; 
             }
 

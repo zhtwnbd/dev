@@ -61,6 +61,7 @@ namespace dev
             int getId(void) const { return id_; }
 
             unsigned long long getLoopCounter(void) const { return loopCounter_; }
+            base::mtime_t getFrameSystemTime(void) const { return frameSysTime_; }
 
         private:
             void setStatus(Status status) { status_ = status; }
@@ -74,6 +75,7 @@ namespace dev
             int id_;                        // 标志ID
             Status status_;                 // 状态
             base::mtime_t frameTime_;       // 帧时间(毫秒)，默认每秒50帧
+            base::mtime_t frameSysTime_;    // 每帧系统执行的时间
             ReactorPtr reactor_;            // 网络消息派发器
 
             volatile unsigned long long loopCounter_;    // 循环次数

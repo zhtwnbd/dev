@@ -28,6 +28,7 @@ TcpServer::TcpServer(EventLoop& eventLoop)
 , connInMaster_(0)
 , connHeartTime_(60000)
 , loopFrameTime_(0)
+, masterLoopFrameTime_(0)
 {
     eventLoop_.setRemoveSocketCallback(
         boost::bind(&TcpServer::onSocketRemovedFromLoop, this, _1));
@@ -75,7 +76,7 @@ bool TcpServer::open(const char* addr, int port, int backlog)
 
     // 配置主循环工作状态
     eventLoop_.getReactor()->setHeartBeatTime(connHeartTime_);
-    if (masterAsWorker_) eventLoop_.setFrameTime(loopFrameTime_);
+    eventLoop_.setFrameTime(masterLoopFrameTime_);
 
     setStatus(TcpServer::RUNNING);
     return true;
@@ -131,6 +132,8 @@ void TcpServer::config(Options optname, size_t val)
     case TcpServer::FRAMETIME:
         loopFrameTime_ = base::mtime_t(val);
         break;
+    case TcpServer::MASTERFRAMETIME:
+        masterLoopFrameTime_ = base::mtime_t(val);
     default:
         break;
     }
@@ -161,6 +164,8 @@ void TcpServer::getStatics(struct Statics& statics)
     statics.status = status_;
     statics.totalConns = connInMaster_;
     statics.masterLoopCount = eventLoop_.getLoopCounter();
+    statics.masterLoopFrameSysTime = eventLoop_.getFrameSystemTime();
+    statics.masterLoopFrameTime = masterLoopFrameTime_;
 
     __TS_EACH_VECTOR(workers_)
     {
