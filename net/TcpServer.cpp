@@ -7,6 +7,7 @@
 
 #include <boost/bind.hpp>
 #include <dev/base/Runtime.hpp>
+#include <dev/base/Exception.hpp>
 #include "TcpServer.hpp"
 using namespace dev::net;
 
@@ -27,8 +28,8 @@ TcpServer::TcpServer(EventLoop& eventLoop)
 , masterAsWorker_(false)
 , connInMaster_(0)
 , connHeartTime_(60000)
-, masterLoopFrameTime_(0)
 , loopFrameTime_(0)
+, masterLoopFrameTime_(0)
 {
     eventLoop_.setRemoveSocketCallback(
         boost::bind(&TcpServer::onSocketRemovedFromLoop, this, _1));
@@ -259,20 +260,29 @@ TcpConnectionPtr& TcpServer::makeTcpConnection(sock_t sock)
     assert(status_ == TcpServer::RUNNING);
     assert(connectionFactory_);
 
-    // 创建连接
-    net::TcpConnectionPtr conn = connectionFactory_->createConnection(
-        sock, isSizeCfg_, osSizeCfg_);
-    if (conn)
+    int connId = ++connIdGen_;
+    if (connections_[connId])
     {
-        int connId = ++connIdGen_;
-        if (connections_[connId])
+        logger_->error("connection id %d already in use", connId);
+        throw std::exception();
+    }
+
+    __DV_TRY
+    {
+        // 创建连接
+        net::TcpConnectionPtr conn = connectionFactory_->createConnection(
+        sock, isSizeCfg_, osSizeCfg_);
+        if (conn)
         {
-            throw std::exception();
+            // 加入到连接列表
+            conn->setId(connId);
+            connections_[connId] = conn;
+            return connections_[connId];
         }
-        // 加入到连接列表
-        conn->setId(connId);
-        connections_[connId] = conn;
-        return connections_[connId];
+    }
+    __DV_CATCH(...)
+    {
+
     }
 
     throw std::exception();

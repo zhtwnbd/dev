@@ -26,6 +26,12 @@ namespace dev
             {
 
             }
+            LockedQueue(size_t size)
+                : storage_(size)
+                , lock_()
+            {
+
+            }
             ~LockedQueue()
             {
 

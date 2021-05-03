@@ -10,6 +10,7 @@
 
 #include <dev/base/Atomic.hpp>
 #include <dev/base/Runtime.hpp>
+#include <dev/base/Exception.hpp>
 #include <dev/base/Logger.hpp>
 #include <dev/base/Mutex.hpp>
 #include <dev/base/LockGuard.hpp>
