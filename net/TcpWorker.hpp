@@ -2,7 +2,7 @@
  * Name			: TcpWorker.hpp
  * Author		: 671643387
  * Date			: 2015年9月1日
- * Description	:
+ * Description	: TcpWorekr类，处理绑定到其的连接消息
  *****************************************************************************/
 
 #ifndef NET_TCPWORKER_HPP_

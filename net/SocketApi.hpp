@@ -2,7 +2,7 @@
  * Name			: SocketApi.hpp
  * Author		: 671643387
  * Date			: Aug 27, 2015
- * Description	:
+ * Description	: 套接字APIs
  *****************************************************************************/
 
 #ifndef SOCKETAPI_HPP_

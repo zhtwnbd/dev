@@ -2,7 +2,7 @@
  * Name         : Thread.hpp
  * Author       : 671643387
  * Date         : 2015年9月6日
- * Description  :
+ * Description  : 线程类
  *****************************************************************************/
 
 #ifndef BASE_THREAD_HPP_

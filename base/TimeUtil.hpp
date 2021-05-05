@@ -2,7 +2,7 @@
  * Name         : TimeUtil.hpp
  * Author       : 671643387
  * Date         : 2015年9月6日
- * Description  :
+ * Description  : 时间工具
  *****************************************************************************/
 
 #ifndef BASE_TIMEUTIL_HPP_

@@ -2,7 +2,7 @@
  * Name         : Socket.hpp
  * Author       : 671643387
  * Date         : 2015年9月6日
- * Description  :
+ * Description  : 套接字类
  *****************************************************************************/
 
 #ifndef NET_SOCKET_HPP_

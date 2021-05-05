@@ -2,7 +2,7 @@
  * Name         : IniConfigFile.hpp
  * Author       : 671643387
  * Date         : 2015年9月6日
- * Description  :
+ * Description  : 解析ini文件
  *****************************************************************************/
 
 #ifndef BASE_DETAIL_INICONFIGFILE_HPP_

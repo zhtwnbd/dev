@@ -2,7 +2,7 @@
  * Name			: TcpAcceptor.hpp
  * Author		: 671643387
  * Date			: 2015年8月30日
- * Description	:
+ * Description	: Tcp连接接收器
  *****************************************************************************/
 
 #ifndef NET_TCPACCEPTOR_HPP_

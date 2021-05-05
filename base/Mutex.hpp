@@ -2,7 +2,7 @@
  * Name         : Mutex.hpp
  * Author       : 671643387
  * Date         : 2015年9月6日
- * Description  :
+ * Description  : 互斥体
  *****************************************************************************/
 
 #ifndef BASE_MUTEX_HPP_

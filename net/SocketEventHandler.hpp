@@ -2,7 +2,7 @@
  * Name         : SocketEventHandler.hpp
  * Author       : 671643387
  * Date         : 2015年9月6日
- * Description  :
+ * Description  : 套接字事件处理器基类
  *****************************************************************************/
 
 #ifndef NET_SOCKETEVENTHANDLER_HPP_

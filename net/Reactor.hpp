@@ -2,7 +2,7 @@
  * Name         : Reactor.hpp
  * Author       : 671643387
  * Date         : 2015年9月6日
- * Description  :
+ * Description  : 网络事件派发器，检查事件源，派发事件
  *****************************************************************************/
 
 #ifndef NET_REACTOR_HPP_

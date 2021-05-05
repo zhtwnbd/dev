@@ -2,7 +2,7 @@
  * Name         : XmlConfigFile.hpp
  * Author       : 671643387
  * Date         : 2015年9月6日
- * Description  :
+ * Description  : 解析xml文件
  *****************************************************************************/
 
 #ifndef BASE_DETAIL_XMLCONFIGFILE_HPP_

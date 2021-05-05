@@ -2,7 +2,7 @@
  * Name			: TcpConnectionFactory.hpp
  * Author		: 671643387
  * Date			: 2015年8月31日
- * Description	:
+ * Description	: Tcp连接工厂基类
  *****************************************************************************/
 
 #ifndef NET_TCPCONNECTIONFACTORY_HPP_
@@ -23,6 +23,13 @@ namespace dev
             virtual ~TcpConnectionFactory() { }
 
         public:
+            /**
+             * @brief 创建一个Tcp连接
+             * @param sock      本地套接字
+             * @param isBufSize 连接输入流缓存大小
+             * @param osBufSize 连接输出流缓存大小
+             * @return TcpConnectionPtr
+             */
             virtual TcpConnectionPtr createConnection(sock_t sock, size_t isBufSize, size_t osBufSize) = 0;
         };
 

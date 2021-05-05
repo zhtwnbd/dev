@@ -2,7 +2,7 @@
  * Name			: TcpConnectionOutputStream.hpp
  * Author		: 671643387
  * Date			: Aug 27, 2015
- * Description	:
+ * Description	: Tcp连接输出流
  *****************************************************************************/
 
 #ifndef TCPCONNECTIONOUTPUTSTREAM_HPP_

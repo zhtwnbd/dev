@@ -2,7 +2,7 @@
  * Name         : EventLoop.hpp
  * Author       : 671643387
  * Date         : 2015年9月6日
- * Description  :
+ * Description  : 事件循环，占用线程资源，负责网络IO的派发和处理发送到其的消息
  *****************************************************************************/
 
 #ifndef NET_EVENTLOOP_HPP_

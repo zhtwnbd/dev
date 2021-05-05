@@ -2,7 +2,7 @@
  * Name         : Atom.hpp
  * Author       : 671643387
  * Date         : 2015年9月11日
- * Description  :
+ * Description  : 原子操作相关
  *****************************************************************************/
 
 #ifndef BASE_ATOM_HPP_

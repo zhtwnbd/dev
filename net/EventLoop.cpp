@@ -41,7 +41,6 @@ EventLoop::EventLoop(Reactor* reactor)
 , frameSysTime_(0)
 , reactor_(reactor)
 , loopCounter_(0)
-, events_(1024)
 {
 
 }

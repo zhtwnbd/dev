@@ -2,7 +2,7 @@
  * Name			: TcpServer.hpp
  * Author		: 671643387
  * Date			: 2015年8月31日
- * Description	:
+ * Description	:  Tcp服务器，持有一个连接接收器和数个TcpWorker，处理Tcp连接请求和数据请求
  *****************************************************************************/
 
 #ifndef NET_TCPSERVER_HPP_

@@ -2,7 +2,7 @@
  * Name         : LockedQueue.hpp
  * Author       : 671643387
  * Date         : 2015年9月6日
- * Description  :
+ * Description  : 加锁队列
  *****************************************************************************/
 
 #ifndef BASE_LOCKEDQUEUE_HPP_
@@ -22,12 +22,6 @@ namespace dev
         public:
             LockedQueue()
                 : storage_()
-                , lock_()
-            {
-
-            }
-            LockedQueue(size_t size)
-                : storage_(size)
                 , lock_()
             {
 

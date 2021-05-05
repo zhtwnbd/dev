@@ -7,7 +7,6 @@ if (WINDOWS)
 add_definitions(-D__WINDOWS__)
 add_definitions(-D_WIN32_WINNT=0x0501)
 add_definitions(-D_USE_SELECT)
-add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 else ()
 add_definitions(-D__LINUX__)
 add_definitions(-D_USE_EPOLL)
@@ -30,8 +29,6 @@ set(dev_SOURCES
 	base/Logger.hpp
 	base/Mutex.hpp
 	base/LockGuard.hpp
-	base/Exception.hpp
-	base/Exception.cpp
 	base/Thread.hpp
 	base/Thread.cpp
 	base/Mutex.hpp

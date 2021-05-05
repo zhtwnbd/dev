@@ -2,7 +2,7 @@
  * Name         : Logger.hpp
  * Author       : 671643387
  * Date         : 2015年9月8日
- * Description  :
+ * Description  : 日志记录器基类
  *****************************************************************************/
 
 #ifndef BASE_LOGGER_HPP_

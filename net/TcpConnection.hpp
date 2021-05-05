@@ -2,7 +2,7 @@
  * Name			: TcpConnection.hpp
  * Author		: 671643387
  * Date			: Aug 30, 2015
- * Description	:
+ * Description	: Tcp连接类
  *****************************************************************************/
 
 #ifndef TCPCONNECTION_HPP_INCLUDED
